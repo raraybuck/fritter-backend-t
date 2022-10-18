@@ -1,5 +1,6 @@
 import type {Types} from 'mongoose';
 import {Schema, model} from 'mongoose';
+import type {Persona} from '../persona/model';
 
 /**
  * This file defines the properties stored in a User
@@ -12,6 +13,7 @@ export type User = {
   username: string;
   password: string;
   dateJoined: Date;
+  personas: [Persona];
 };
 
 // Mongoose schema definition for interfacing with a MongoDB table
@@ -31,6 +33,10 @@ const UserSchema = new Schema({
   // The date the user joined
   dateJoined: {
     type: Date,
+    required: true
+  },
+  personas: {
+    type: Array,
     required: true
   }
 });
