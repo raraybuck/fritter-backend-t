@@ -1,3 +1,4 @@
+/* eslint-disable capitalized-comments */
 import type {HydratedDocument, Types} from 'mongoose';
 import type {Persona} from './model';
 import PersonaModel from './model';
@@ -15,12 +16,12 @@ class PersonaCollection {
   /**
    * Add a new persona
    *
-   * @param {User} user - The User the persona is associated with
+   * @param {string} user - The username of the User the persona is associated with
    * @param {string} handle - The Fritter handle for the persona
    * @param {string} name - The Persona "name", like J. Doe
    * @return {Promise<HydratedDocument<Persona>>} - The newly created Persona
    */
-  static async addOne(user: User, handle: string, name: string): Promise<HydratedDocument<Persona>> {
+  static async addOne(user: string, handle: string, name: string): Promise<HydratedDocument<Persona>> {
     const persona = new PersonaModel({user, handle, name});
     await persona.save(); // Saves user to MongoDB
     return persona;
@@ -40,34 +41,44 @@ class PersonaCollection {
    * Find a persona by handle (case insensitive).
    *
    * @param {string} handle - The handle of the persona to find
-   * @return {Promise<HydratedDocument<Persona>> | Promise<null>} - The persona with the given username, if any
+   * @return {Promise<HydratedDocument<Persona>> | Promise<null>} - The persona with the given handle, if any
    */
   static async findOneByHandle(handle: string): Promise<HydratedDocument<Persona>> {
-    return PersonaModel.findOne({handle: new RegExp(`^${handle.trim()}$`, 'i')});
+    return PersonaModel.findOne({handle: new RegExp(`^${handle.trim()}$`, 'i')}); // i flag means case insensitive
   }
 
-//     /**
-//    * Find a user by username (case insensitive).
-//    *
-//    * @param {string} username - The username of the user to find
-//    * @return {Promise<HydratedDocument<User>> | Promise<null>} - The user with the given username, if any
-//    */
-//      static async findOneByUsername(username: string): Promise<HydratedDocument<User>> {
-//         return UserModel.findOne({username: new RegExp(`^${username.trim()}$`, 'i')});
-//       }
+  /**
+   * Find persona by user and persona name (case insensitive).
+   *
+   * @param {string} user - The username of the User to look under
+   * @param {string} name - the name of the persona
+   * @return {Promise<HydratedDocument<Persona>> | Promise<null>} - The persona with the given name and User, if any
+   */
+  static async findOneByUserAndName(user: string, name: string): Promise<HydratedDocument<Persona>> {
+    return PersonaModel.findOne({user: new RegExp(`^${user.trim()}$`, 'i'), name: new RegExp(`^${name.trim()}$`, 'i')
+    });
+  }
+
+  /**
+   * Find a list of all personas under a user (username)
+   *
+   * @param {string} user - The username the personas are associated with
+   * @return {Promise<HydratedDocument<Persona>>[]} - The personas of the given user(name)
+   */
+  static async findManyByUsername(user: string): Promise<Array<HydratedDocument<Persona>>> {
+    return PersonaModel.find({ user: new RegExp(`^${user.trim()}$`, 'i'),
+    });
+  }
 
 //   /**
-//    * Find a user by username (case insensitive).
-//    *
-//    * @param {string} username - The username of the user to find
-//    * @param {string} password - The password of the user to find
-//    * @return {Promise<HydratedDocument<User>> | Promise<null>} - The user with the given username, if any
-//    */
-//   static async findOneByUsernameAndPassword(username: string, password: string): Promise<HydratedDocument<User>> {
-//     return UserModel.findOne({
-//       username: new RegExp(`^${username.trim()}$`, 'i'),
-//       password
-//     });
+//  * Find a list of all personas under a user (username)
+//  *
+//  * @param {string} username - The username of author of the freets
+//  * @return {Promise<HydratedDocument<Persona>[]>} - An array of all of the personas
+//  */
+//   static async findAllByUsername(username: string): Promise<Array<HydratedDocument<Persona>>> {
+//     const author = await UserCollection.findOneByUsername(username);
+//     return PersonaModel.find({authorId: author._id}).populate('authorId');
 //   }
 
   /**
@@ -83,7 +94,7 @@ class PersonaCollection {
       persona.name = personaDetails.name as string;
     }
 
-    if (personaDetails.handle) {  // TODO: check that the handle is not taken
+    if (personaDetails.handle) { 
       persona.handle = personaDetails.handle as string;
     }
 
