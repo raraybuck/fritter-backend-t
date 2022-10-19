@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="/stylesheets/style.css">
   <script src="/scripts/freet.js"></script>
   <script src="/scripts/user.js"></script>
+  <script src="/scripts/persona.js"></script>
   <script src="/scripts/index.js"></script>
 </head>
 
@@ -32,7 +33,7 @@
           <input type="submit" value="Create User">
         </form>
 
-        <!-- <form id="create-persona">
+        <form id="create-persona">
           <h3>Create Persona</h3>
           <div>
             <label for="user">Username:</label>
@@ -46,8 +47,29 @@
             <label for="name">Persona Name:</label>
             <input id="name" name="name">
           </div>
-          <input type="submit" value="Create User">
-        </form> -->
+          <input type="submit" value="Create Persona">
+        </form>
+
+        <form id="update-persona">
+          <h3>Update Persona</h3>
+          <div>
+            <label for="id">Persona ID:</label>
+            <input id="id" name="id">
+          </div>
+          <div>
+            <label for="user">Username:</label>
+            <input id="user" name="user">
+          </div>
+          <div>
+            <label for="handle">Handle:</label>
+            <input id="handle" name="handle">
+          </div>
+          <div>
+            <label for="name">Persona Name:</label>
+            <input id="name" name="name">
+          </div>
+          <input type="submit" value="Update Persona">
+        </form>
 
         <form id="delete-user">
           <h3>Delete User</h3>

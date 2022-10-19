@@ -44,18 +44,34 @@ const isValidHandle = (req: Request, res: Response, next: NextFunction) => {
 const isHandleNotAlreadyInUse = async (req: Request, res: Response, next: NextFunction) => {
     const persona = await PersonaCollection.findOneByHandle(req.body.handle);
   
-    // // If the current session user wants to change their username to one which matches
-    // // the current one irrespective of the case, we should allow them to do so
-    // if (!persona || (persona?._id.toString() === req.session.userId)) {
-    //   next();
-    //   return;
-    // }
-  
-    res.status(409).json({
-      error: {
-        username: 'A persona with this Fritter handle already exists.'
-      }
-    });
+    if (persona) {
+        res.status(409).json({
+            error: {
+                username: 'A persona with this Fritter handle already exists.'
+            }
+        });
+        return;
+    }
+    next();
+  };
+
+/**
+ * Checks if a handle in req.body is already in use (excluding the persona tryig to be updated)
+*/
+const isNewHandleNotAlreadyInUse = async (req: Request, res: Response, next: NextFunction) => {
+    const personaOriginal = await PersonaCollection.findOneByPersonaId(req.params.personaId);
+    if (personaOriginal.handle !== req.body.handle) { // the user is changing the handle
+        const personaMatch = await PersonaCollection.findOneByHandle(req.body.handle);
+        if (personaMatch) { // found another persona using this handle
+            res.status(409).json({
+                error: {
+                    handle: 'A persona with this Fritter handle already exists.'
+                }
+            });
+            return;
+        }
+    }
+    next();
   };
 
 /**
@@ -100,6 +116,7 @@ const isPersonaExists = async (req: Request, res: Response, next: NextFunction) 
     isValidName,
     isValidHandle,
     isHandleNotAlreadyInUse,
+    isNewHandleNotAlreadyInUse,
     isPersonaExistWithUser,
     isPersonaExists
   };

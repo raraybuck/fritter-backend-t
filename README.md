@@ -313,3 +313,56 @@ This renders the `index.html` file that will be used to interact with the backen
 **Throws**
 
 - `403` if the user is not logged in
+
+
+## Routes I Added
+
+### `POST /api/persona` - Create a new persona
+
+**Body**  
+
+- `user` _{string}_ - username of the persona's user
+- `handle` _{string}_ - The persona's handle
+- `name` _{string}_ - The persona's name
+
+**Returns**
+
+- A success message
+- An object with the created persona's details
+
+**Throws**
+
+- `403` - If user is not logged in
+- `409` - If handle already taken
+- `400` - If handle or name are not of the correct format
+
+### `PUT /api/persona/:personaId` - Create a new persona
+
+**Body**  _(no need to add fields that are not being changed)_
+
+- `user` _{string}_ - username of the persona's user
+- `handle` _{string}_ - The persona's (new) handle
+- `name` _{string}_ - The persona's (new) name
+
+**Returns**
+
+- A success message
+- An object with the update persona's details
+
+**Throws**
+
+- `403` - If user is not logged in
+- `400` - If persona does not exist under the user or could not be found at all
+- `400` - If handle or name are not of the correct format
+- `409` - If handle already taken
+
+#### `DELETE /api/persona/:id` - Delete a persona
+
+**Returns**
+
+- A success message
+
+**Throws**
+
+- `403` if user is not logged in
+- `404` if the persona is not found

@@ -18,7 +18,7 @@ const router = express.Router();
  * @param {string} handle - persona's handle
  * @param {string} name - persona's name
  * @return {PersonaResponse} - The created persona
- * @throws {403} - If there is the user is not logged in
+ * @throws {403} - If the user is not logged in
  * @throws {409} - If handle is already taken
  * @throws {400} - If name or handle is not in correct format
  *
@@ -46,8 +46,8 @@ router.post(
  * @name PUT /api/persona/:id
  *
  * @param {string} user - username of the persona's user
- * @param {string} handle - The persona's new password
- * @param {string} name - The persona's new name
+ * @param {string} handle - The persona's (new) handle
+ * @param {string} name - The persona's (new) name
  * @return {PersonaRespons} - The updated persona
  * @throws {403} - If user is not logged in
  * @throws {400} - If persona does not exist under the user or could not be found at all
@@ -61,7 +61,7 @@ router.put(
     personaValidator.isPersonaExistWithUser,
     personaValidator.isValidName,
     personaValidator.isValidHandle,
-    personaValidator.isHandleNotAlreadyInUse,
+    personaValidator.isNewHandleNotAlreadyInUse,
   ],
   async (req: Request, res: Response) => {
     const persona = await PersonaCollection.updateOne(req.params.personaId, req.body);
@@ -84,7 +84,7 @@ router.put(
  * @throws {404} - If the persona with personaId is not found
  */
 router.delete(
-  '/:freetId?',
+  '/:personaId?',
   [
     userValidator.isUserLoggedIn,
     personaValidator.isPersonaExists
