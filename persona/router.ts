@@ -76,8 +76,6 @@ router.put(
  * Delete a persona.
  *
  * @name DELETE /api/persona/:id
- * 
- * @param {string} personaId - the id of the persona to delete
  *
  * @return {string} - A success message
  * @throws {403} - If the user is not logged in
@@ -90,7 +88,7 @@ router.delete(
     personaValidator.isPersonaExists
   ],
   async (req: Request, res: Response) => {
-    await PersonaCollection.deleteOne(req.body.personaId);
+    await PersonaCollection.deleteOne(req.params.personaId);
     res.status(200).json({
       message: 'Your persona has been deleted successfully.'
     });

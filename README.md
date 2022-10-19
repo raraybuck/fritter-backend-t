@@ -317,7 +317,7 @@ This renders the `index.html` file that will be used to interact with the backen
 
 ## Routes I Added
 
-### `POST /api/persona` - Create a new persona
+#### `POST /api/persona` - Create a new persona
 
 **Body**  
 
@@ -336,7 +336,7 @@ This renders the `index.html` file that will be used to interact with the backen
 - `409` - If handle already taken
 - `400` - If handle or name are not of the correct format
 
-### `PUT /api/persona/:personaId` - Create a new persona
+#### `PUT /api/persona/:personaId` - Create a new persona
 
 **Body**  _(no need to add fields that are not being changed)_
 
@@ -366,3 +366,100 @@ This renders the `index.html` file that will be used to interact with the backen
 
 - `403` if user is not logged in
 - `404` if the persona is not found
+
+
+## Routes I Will Add
+
+#### `GET /api/reactions?author=USERNAME` - Get reactions by author
+
+**Returns**
+
+- An array of reactions created by user with username `author`
+
+**Throws**
+
+- `400` if `author` is not given
+- `404` if `author` is not a recognized username of any user
+
+#### `POST /api/reaction` - Create a new reaction on a freet
+
+**Body**
+
+- `emoji` _{string}_ - The reaction, unicode string
+- `author` _{string}_ - The Fritter persona handle who authored the reaction
+- `freetId` _{string}_ - The id of the freet to tie the reaction to
+
+**Returns**
+
+- A success message
+- An object with the created reaction
+
+**Throws**
+
+- `403` if the user is not logged in
+- `400` If the reaction is empty
+- `404` If the author of the freet is not found
+
+#### `DELETE /api/reaction` - Delete an existing reaction
+
+**Body**
+
+- `emoji` _{string}_ - The reaction, unicode string
+- `author` _{string}_ - The Fritter persona handle who authored the reaction
+- `freetId` _{string}_ - The id of the freet the reaction is tied to
+
+**Returns**
+
+- A success message
+
+**Throws**
+
+- `403` if the user is not logged in
+- `403` if the user is not the author of the reaction
+- `404` if the freet is invalid or the reaction doesn't exist on the freet
+
+#### `GET /api/followers/persona=HANDLE` - Get all the followers of a persona
+
+**Returns**
+
+- An array of all personas who follow this user/persona, sorted  order by date followed from newest to oldest
+
+#### `GET /api/followers/handle/following` - Get followers of a persona
+
+**Returns**
+
+- An array of persona that this persona follows
+
+**Throws**
+
+- `400` if `persona` is not given
+- `404` if `persona` is not an existing persona
+
+#### `POST /api/followers` - Add the signed in user/persona as a follower to the persona represented by personaId
+
+**Body**
+
+- `follower` _{Persona}_ - The persona requesting to follow
+- `following` _{string}_ - The personaId of the persona to be followed
+- `date` _{Date}_ - The date of following
+
+**Returns**
+
+- A success message
+- A object with the created freet
+
+**Throws**
+
+- `403` if the user is not logged in
+- `404` if the personaId is not valid
+
+#### `DELETE /api/followers/following/personaId?` - Remove the logged in persona as a follower from the persona matched by personaId
+
+**Returns**
+
+- A success message
+
+**Throws**
+
+- `403` if the user is not logged in
+- `404` if the personaId is invalid

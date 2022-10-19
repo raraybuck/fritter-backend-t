@@ -31,6 +31,7 @@ const formsAndHandlers = {
   'create-user': createUser,
   'create-persona': createPersona,
   'update-persona': updatePersona,
+  'delete-persona': deletePersona,
   'delete-user': deleteUser,
   'change-username': changeUsername,
   'change-password': changePassword,

@@ -104,7 +104,7 @@ const isPersonaExistWithUser = async (req: Request, res: Response, next: NextFun
  * Checks if a persona with personaId exists.
  */
 const isPersonaExists = async (req: Request, res: Response, next: NextFunction) => {
-    const persona = await PersonaCollection.findOneByPersonaId(req.body.personaId);
+    const persona = await PersonaCollection.findOneByPersonaId(req.params.personaId);
     if (persona) {
         next();
     } else {
