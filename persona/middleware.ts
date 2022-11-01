@@ -47,7 +47,7 @@ const isHandleNotAlreadyInUse = async (req: Request, res: Response, next: NextFu
     if (persona) {
         res.status(409).json({
             error: {
-                username: 'A persona with this Fritter handle already exists.'
+                conflict: 'A persona with this Fritter handle already exists.'
             }
         });
         return;
@@ -56,7 +56,7 @@ const isHandleNotAlreadyInUse = async (req: Request, res: Response, next: NextFu
   };
 
 /**
- * Checks if a handle in req.body is already in use (excluding the persona tryig to be updated)
+ * Checks if a handle in req.body is already in use (excluding the persona trying to be updated)
 */
 const isNewHandleNotAlreadyInUse = async (req: Request, res: Response, next: NextFunction) => {
     const personaOriginal = await PersonaCollection.findOneByPersonaId(req.params.personaId);
@@ -89,10 +89,10 @@ const isPersonaExistWithUser = async (req: Request, res: Response, next: NextFun
         return;
     }
 
-    if (persona.user !== req.body.user){
+    if (persona.user !== req.body.username){
         res.status(400).json({
             error: `A persona with Fritter handle ${persona.handle as string} is not associated with the 
-            user of username ${req.body.user as string}.`
+            user of username ${req.body.username as string}.`
         });
         return;
     }

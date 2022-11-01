@@ -1,6 +1,5 @@
 import type {Request, Response} from 'express';
 import express from 'express';
-// import FreetCollection from '../freet/collection';
 import PersonaCollection from './collection';
 import * as userValidator from '../user/middleware';
 import * as personaValidator from '../persona/middleware';
@@ -14,7 +13,7 @@ const router = express.Router();
  *
  * @name POST /api/persona
  *
- * @param {string} user - username of user
+ * @param {string} username - username of user
  * @param {string} handle - persona's handle
  * @param {string} name - persona's name
  * @return {PersonaResponse} - The created persona
@@ -32,7 +31,7 @@ router.post(
     personaValidator.isHandleNotAlreadyInUse,
   ],
   async (req: Request, res: Response) => {
-    const persona = await PersonaCollection.addOne(req.body.user, req.body.handle, req.body.name);
+    const persona = await PersonaCollection.addOne(req.body.username, req.body.handle, req.body.name);
     res.status(201).json({
       message: `Your persona was created successfully. You are now active as @${persona.handle}`,
       persona: util.constructPersonaResponse(persona)
@@ -45,7 +44,7 @@ router.post(
  *
  * @name PUT /api/persona/:id
  *
- * @param {string} user - username of the persona's user
+ * @param {string} username - username of the persona's user
  * @param {string} handle - The persona's (new) handle
  * @param {string} name - The persona's (new) name
  * @return {PersonaRespons} - The updated persona
