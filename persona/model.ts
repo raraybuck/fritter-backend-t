@@ -11,21 +11,30 @@ import type {User} from '../user/model';
 // Type definition for Persona on the backend
 export type Persona = {
   _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
-  user: string;
+  user: string; //username of the user
   handle: string;
   name: string;
 };
-  
+
+// export type PopulatedPersona = {
+//   _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
+//   user: User; // User object
+//   handle: string;
+//   name: string;
+// };
+
+
 // Mongoose schema definition for interfacing with a MongoDB table
 // Persona stored in this table will have these fields, with the
 // type given by the type property, inside MongoDB
 const PersonaSchema = new Schema({
-  // The persona's parent user, by username
+  // The persona's parent user (creator)
   user: {
-    type: String, // User Object ??
-    required: true
+    type: String, 
+    required: true,
+    // ref: 'User'
   },
-  // The persona's public identifier/handle
+  // The persona's public identifier/handle (should be unique)
   handle: {
     type: String,
     required: true
