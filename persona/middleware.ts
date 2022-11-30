@@ -116,19 +116,42 @@ const isPersonaExistWithUser = async (req: Request, res: Response, next: NextFun
 };
 
 /**
- * Checks if a persona with personaId exists.
+ * Checks if a persona with personaId in params exists.
  */
 const isPersonaExists = async (req: Request, res: Response, next: NextFunction) => {
     const persona = await PersonaCollection.findOneByPersonaId(req.params.personaId);
     if (persona) {
         next();
     } else {
-      // const p = await PersonaCollection.findOneByPersonaId(req.query.personaId as string);
+        // const p = await PersonaCollection.findOneByPersonaId(req.query.personaId as string);
         res.status(404).json({error: 'Persona not found.'});
         return;
     }
     next();
 };
+
+/**
+ * Checks if a persona with personaId as personaId in req.query exists
+ */
+ const isPersonaQueryExists = async (req: Request, res: Response, next: NextFunction) => {
+  if (!req.query.personaId) {
+    res.status(400).json({
+      error: 'Provided persona id must be nonempty.'
+    });
+    return;
+  }
+
+  const persona = await PersonaCollection.findOneByPersonaId(req.query.personaId as string);
+  if (!persona) {
+    res.status(404).json({
+      error: `A persona with personaId ${req.query.personaId as string} does not exist.`
+    });
+    return;
+  }
+
+  next();
+};
+
 
 /**
  * Checks if there is a currently active persona. That is, if personaId is set in session
@@ -153,6 +176,7 @@ const isPersonaSignedIn = async (req: Request, res: Response, next: NextFunction
     isPersonaExistWithUser,
     isPersonaExists,
     isPersonaHandleExistWithUser,
-    isPersonaSignedIn
+    isPersonaSignedIn,
+    isPersonaQueryExists
   };
   

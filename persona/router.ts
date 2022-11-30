@@ -40,39 +40,57 @@ router.post(
 
 
 /**
- * Get personas by user.
+ * Get personas of the logged in user.
  *
- * @name GET /api/persona?username=username
+ * @name GET /api/persona
  * 
- *
  * @return {PersonaResponse[]} - An array of personas created by user
- * @throws {400} - If user is not given
- * @throws {404} - If no user has given username
+ * @throws {403} - If the user is not logged in
+ */
+/**
+ * Get personas of a user.
+ *
+ * @name GET /api/persona?author=username
+ * 
+ * @return {PersonaResponse[]} - An array of personas created by user (author)
+ * @throws {400} - If user is not given (empty)
+ * @throws {403} - If the user is not logged in
+ * @throws {404} - If no user is not found
  *
  */
  router.get(
-  '/',  // case where request is for a different user
-  async (req: Request, res: Response, next: NextFunction) => {
-    // Check if user query parameter was supplied
-    if (req.query.username === undefined) {
-      next();
-      return;
-    }
-    const allPersonas = await PersonaCollection.findAllByUsername(req.query.username as string);
-    const response = allPersonas.map(util.constructPersonaResponse);
-    res.status(200).json(response);
-  }, // case where the user doesnt pass in anything, requesting own info
+  '/', 
+  // case where the user doesnt pass in anything, requesting own info 
   [
     userValidator.isUserLoggedIn,
   ],
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: NextFunction) => {
+    // Check if authorId query parameter was supplied
+    if (req.query.author !== undefined) {
+      next();
+      return;
+    }
+    console.log("no query parameter");
     const { username } = await UserCollection.findOneByUserId(req.session.userId as string);
     const allPersonas = await PersonaCollection.findAllByUsername(username);
     const response = allPersonas.map(util.constructPersonaResponse);
     res.status(200).json({
       user: username,
-      personas: response });
-  }
+      personas: response 
+    });
+  },
+
+  // case where request is for a different user
+  [
+    userValidator.isUserLoggedIn,
+    userValidator.isAuthorExists
+  ],
+  async (req: Request, res: Response) => {
+    console.log("case where there is a query parameter");
+    const allPersonas = await PersonaCollection.findAllByUsername(req.query.author as string);
+    const response = allPersonas.map(util.constructPersonaResponse);
+    res.status(200).json(response);
+    }
 );
 
 /**
@@ -99,6 +117,7 @@ router.post(
   ],
   async (req: Request, res: Response) => {
     const persona = await PersonaCollection.addOne(req.body.username, req.body.handle, req.body.name);
+    req.session.personId = persona._id.toString();
     res.status(201).json({
       message: `Your persona was created successfully. You are now active as @${persona.handle}`,
       persona: util.constructPersonaResponse(persona)

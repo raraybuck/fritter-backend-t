@@ -48,8 +48,22 @@ class FollowCollection {
      */
     static async findAll(): Promise<Array<HydratedDocument<Follow>>> {
         // Retrieves follows and sorts them from most to least recent
-        return FollowModel.find({}).sort({dateModified: -1}).populate(['followerId', 'followingId']);
+        return FollowModel.find({}).sort({dateFollowed: -1}).populate(['followerId', 'followingId']);
     }
+
+    // /**
+    //  * Get all the follows in the database that include a certain person
+    //  *
+    //  * @param personaId - the id of the persona to find followers and following for
+    //  * @return {Promise<HydratedDocument<Follow>[]>} - An array of all of the freets
+    //  */
+    // static async findAllWithPersonaId(personaId: Types.ObjectId | string): Promise<Array<HydratedDocument<Follow>>> {
+    //     // Retrieves follows and sorts them from most to least recent
+    //     const following = await FollowCollection.findAllInitiatedById(personaId);
+    //     const followers = await FollowCollection.findAllReceivedById(personaId);
+    //     const follows:Follow[] = following.concat(followers);
+    //     return follows.sort({dateFollowed: -1}));
+    // }
 
     /**
      * Find a follow by the two parties of the Follow

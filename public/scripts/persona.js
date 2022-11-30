@@ -35,7 +35,7 @@ function deletePersona(fields) {
   
   // need to be careful with this one... could expoes other users' data/personas
   function viewPersonasByUser(fields) {
-    fetch(`/api/persona?username=${fields.username}`)
+    fetch(`/api/persona?author=${fields.username}`)
       .then(showResponse)
       .catch(showResponse);
   }

@@ -45,13 +45,27 @@
         </form>
 
         <form id="view-all-follows">
-          <h3>View All Follows in Database</h3>
+          <h3>View All Follows related to this Persona</h3>
           <input type="submit" value="View All Follows">
         </form>
 
-        <form id="view-following">
+        <form id="view-all-followers">
+          <h3>View Your Followers</h3>
+          <input type="submit" value="View All Followers">
+        </form>
+
+        <form id="view-all-following">
           <h3>View All Accounts You Are Following</h3>
-          <input type="submit" value="View All Follows">
+          <input type="submit" value="View All Following">
+        </form>
+
+        <form id="view-follows-personaId">
+          <h3>View A Persona's Related Follows</h3>
+          <div>
+            <label for="personaId">personaId:</label>
+            <input id="personaId" name="personaId">
+          </div>
+          <input type="submit" value="View All Persona's Follows">
         </form>
 
         <form id="create-persona">
