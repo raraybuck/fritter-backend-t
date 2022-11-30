@@ -8,6 +8,7 @@
   <script src="/scripts/freet.js"></script>
   <script src="/scripts/user.js"></script>
   <script src="/scripts/persona.js"></script>
+  <script src="/scripts/follows.js"></script>
   <script src="/scripts/index.js"></script>
 </head>
 
@@ -32,6 +33,25 @@
             <input id="password" name="password">
           </div>
           <input type="submit" value="Sign In">
+        </form>
+
+        <form id="sign-in-persona">
+          <h3>Sign In</h3>
+          <div>
+            <label for="handle">Handle:</label>
+            <input id="handle" name="handle">
+          </div>
+          <input type="submit" value="Sign In/Switch Persona">
+        </form>
+
+        <form id="view-all-follows">
+          <h3>View All Follows in Database</h3>
+          <input type="submit" value="View All Follows">
+        </form>
+
+        <form id="view-following">
+          <h3>View All Accounts You Are Following</h3>
+          <input type="submit" value="View All Follows">
         </form>
 
         <form id="create-persona">

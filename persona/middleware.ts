@@ -1,8 +1,7 @@
 import type {Request, Response, NextFunction} from 'express';
 import {Types} from 'mongoose';
-import UserCollection from '../user/collection';
 import PersonaCollection from './collection';
-
+import UserCollection from '../user/collection';
 /**
  * Checks if a name in req.body is valid, that is, it matches the name regex
 */
@@ -83,7 +82,7 @@ const isPersonaExistWithUser = async (req: Request, res: Response, next: NextFun
         res.status(400).json({
         error: {
             personaNotFound: `Persona with persona ID ${req.params.personaId} was not found.`
-        }
+          }
         });
         return;
     }
@@ -99,23 +98,22 @@ const isPersonaExistWithUser = async (req: Request, res: Response, next: NextFun
     next();
 };
 
-// /**
-//  * Checks if a persona with handle given in req.body exists under the logged in user
-//  */
-//  const isPersonaHandleExistWithUser = async (req: Request, res: Response, next: NextFunction) => {
-//   const { username } = await UserCollection.findOneByUserId(req.session.userId as string);
-//   const persona = await PersonaCollection.findOneByUserAndHandle(username, req.body.handle);
-//   if (!persona) {
-//       res.status(404).json({
-//         error: {
-//             personaNotFound: `Persona with handle ${req.body.handle} was not found under the logged in user.`
-//         }
-//       });
-//       return;
-//   }
-
-//   next();
-// };
+/**
+ * Checks if a persona with handle given in req.body exists under the logged in user
+ */
+ const isPersonaHandleExistWithUser = async (req: Request, res: Response, next: NextFunction) => {
+  const { username } = await UserCollection.findOneByUserId(req.session.userId as string);
+  const persona = await PersonaCollection.findOneByUserAndHandle(username, req.body.handle);
+  if (!persona) {
+      res.status(404).json({
+        error: {
+            personaNotFound: `Persona with handle ${req.body.handle} was not found under the logged in user.`
+        }
+      });
+      return;
+  }
+  next();
+};
 
 /**
  * Checks if a persona with personaId exists.
@@ -125,10 +123,27 @@ const isPersonaExists = async (req: Request, res: Response, next: NextFunction) 
     if (persona) {
         next();
     } else {
+      // const p = await PersonaCollection.findOneByPersonaId(req.query.personaId as string);
         res.status(404).json({error: 'Persona not found.'});
         return;
     }
+    next();
 };
+
+/**
+ * Checks if there is a currently active persona. That is, if personaId is set in session
+ */
+const isPersonaSignedIn = async (req: Request, res: Response, next: NextFunction) => {
+  if (!req.session.personaId) {
+    res.status(403).json({
+      error: {
+        auth: 'You must be logged in with an active persona to complete this action.'
+      }
+    });
+    return;
+  }
+  next();
+}
 
   export {
     isValidName,
@@ -137,6 +152,7 @@ const isPersonaExists = async (req: Request, res: Response, next: NextFunction) 
     isNewHandleNotAlreadyInUse,
     isPersonaExistWithUser,
     isPersonaExists,
-    // isPersonaHandleExistWithUser
+    isPersonaHandleExistWithUser,
+    isPersonaSignedIn
   };
   

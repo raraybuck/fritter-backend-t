@@ -1,5 +1,6 @@
 /* eslint-disable capitalized-comments */
 import type {HydratedDocument, Types} from 'mongoose';
+import UserCollection from '../user/collection';
 // import type {Persona, PopulatedPersona} from './model';
 import type {Persona} from './model';
 import PersonaModel from './model';
@@ -125,6 +126,18 @@ class PersonaCollection {
     return persona !== null;
   }
 
+  /**
+   * Delete all a user's personas from the collection (should only be done if the user is deleting their account).
+   *
+   * @param {string} userId - The userId of the owner of personas to delete
+   * @return {Promise<Boolean>} - true if the personas have been deleted, false otherwise
+   */
+    static async deleteMany(userId: string): Promise<boolean> {
+      const {username} = await UserCollection.findOneByUserId(userId);
+      const del = await PersonaModel.deleteMany({user: username});
+      return del !== null;
+    }
+  
   //   /**
   //  * Delete a persona from the collection, by the persona handle and username.
   //  * 

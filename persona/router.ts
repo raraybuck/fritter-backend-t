@@ -9,6 +9,37 @@ import UserCollection from '../user/collection';
 const router = express.Router();
 
 /**
+ * Sign in a persona or switch the currently active persona.
+ *
+ * @name POST /api/persona/session
+ * 
+ * @param {string} handle - The user's persona's handle
+ * @return {PersonaResponse} - An object with user's details
+ * @throws {400} - If handle is  not in the correct format,
+ *                 or missing in the req
+ * @throws {403} - If the user is not logged in
+ * @throws {404} - If the persona doesn't exist with the user
+ *
+ */
+router.post(
+  '/session',
+  [
+    userValidator.isUserLoggedIn,
+    personaValidator.isValidHandle,
+    personaValidator.isPersonaHandleExistWithUser, // checks if the handle exists w/ the logged in user
+  ],
+  async (req: Request, res: Response) => {
+    const persona = await PersonaCollection.findOneByHandle(req.body.handle);
+    req.session.personaId = persona._id.toString();
+    res.status(200).json({
+      message: `You have logged in successfully as persona ${persona.handle}`,
+      persona: util.constructPersonaResponse(persona)
+    });
+  }
+);
+
+
+/**
  * Get personas by user.
  *
  * @name GET /api/persona?username=username
@@ -76,7 +107,7 @@ router.post(
 );
 
 /**
- * Update a user's persona.
+ * Update a user's persona's details.
  *
  * @name PUT /api/persona/:id
  *

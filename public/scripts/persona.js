@@ -39,3 +39,9 @@ function deletePersona(fields) {
       .then(showResponse)
       .catch(showResponse);
   }
+
+  function signInPersona(fields) {
+    fetch(`/api/persona/session`, {method: 'POST', body: JSON.stringify(fields), headers: {'Content-Type': 'application/json'}})
+    .then(showResponse)
+    .catch(showResponse);
+  }

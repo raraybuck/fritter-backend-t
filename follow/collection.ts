@@ -1,5 +1,5 @@
 import type {HydratedDocument, Types} from 'mongoose';
-import PersonaCollection from 'persona/collection';
+import PersonaCollection from '../persona/collection';
 import type {Follow} from './model';
 import FollowModel from './model';
 // import UserCollection from '../user/collection';
@@ -124,11 +124,6 @@ class FollowCollection {
     static async deleteMany(personaId: Types.ObjectId | string): Promise<void> {
         await FollowModel.deleteMany({followerId: personaId});
     }
-
-
-    
-
-    
 
 }
 
