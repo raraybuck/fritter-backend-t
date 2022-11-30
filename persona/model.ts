@@ -1,7 +1,7 @@
 /* eslint-disable no-trailing-spaces */
 import type {Types} from 'mongoose';
 import {Schema, model} from 'mongoose';
-import type {Follow} from '../follower/model';
+import type {Follow} from '../follow/model';
 
 /**
  * This file defines the properties stored in a Persona
