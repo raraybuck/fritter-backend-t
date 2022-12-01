@@ -53,7 +53,7 @@ router.post(
  * @name GET /api/persona?author=username
  * 
  * @return {PersonaResponse[]} - An array of personas created by user (author)
- * @throws {400} - If user is not given (empty)
+ * @throws {400} - If author is not given (empty)
  * @throws {403} - If the user is not logged in
  * @throws {404} - If no user is not found
  *
@@ -70,7 +70,6 @@ router.post(
       next();
       return;
     }
-    console.log("no query parameter");
     const { username } = await UserCollection.findOneByUserId(req.session.userId as string);
     const allPersonas = await PersonaCollection.findAllByUsername(username);
     const response = allPersonas.map(util.constructPersonaResponse);
@@ -86,7 +85,6 @@ router.post(
     userValidator.isAuthorExists
   ],
   async (req: Request, res: Response) => {
-    console.log("case where there is a query parameter");
     const allPersonas = await PersonaCollection.findAllByUsername(req.query.author as string);
     const response = allPersonas.map(util.constructPersonaResponse);
     res.status(200).json(response);

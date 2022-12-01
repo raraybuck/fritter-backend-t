@@ -5,8 +5,7 @@ import * as userValidator from '../user/middleware';
 import * as personaValidator from '../persona/middleware';
 import * as followValidator from './middleware';
 import * as util from './util';
-import PersonaCollection from '../persona/collection';
-// import UserCollection from '../user/collection';
+
 
 const router = express.Router();
 
@@ -21,7 +20,7 @@ const router = express.Router();
  *
  */
 /**
- * Get all Follows of and by a persona. If personaId is not supplied, uses the logged in persona.
+ * Get all Follows of and by a persona
  *
  * @name GET /api/follows?personaId=id
  *
@@ -44,7 +43,6 @@ router.get(
             next();
             return;
         } 
-        console.log("query not supplied");
         const following = await FollowCollection.findAllInitiatedById(req.session.personaId);
         const followers = await FollowCollection.findAllReceivedById(req.session.personaId);
         res.status(200).json({
@@ -61,7 +59,6 @@ router.get(
         personaValidator.isPersonaQueryExists
     ], 
     async (req: Request, res: Response) => {
-        console.log("query supplied");
         const following = await FollowCollection.findAllInitiatedById(req.query.personaId as string);
         const followers = await FollowCollection.findAllReceivedById(req.query.personaId as string);
         res.status(200).json({
@@ -155,9 +152,10 @@ router.post(
  * @name DELETE /api/follows?personaId=id
  *
  * @return {string} - A success message
- * @throws {403} - If the user is not logged in
- * @throws {404} - If the persona with personaId is not found
- * @throws {401} - If the persona to delete is the currently active one
+ * @throws {403} - If the user is not logged in or if a persona is not signed in
+ * @throws {404} - If the signed in persona is not following the persona requested (no Follow exists);
+ *                 or if the persona with personaId cannot be found/DNE
+ * @throws {400} - If the personaId field is empty
  */
  router.delete(
     '/',

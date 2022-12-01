@@ -317,6 +317,45 @@ This renders the `index.html` file that will be used to interact with the backen
 
 ## Routes I Added
 
+#### `POST /api/persona/session` - Sign in a persona or switch the currently active persona
+
+**Body**  
+
+- `handle` _{string}_ - The persona's handle
+
+**Returns**
+
+- A success message
+- An object with the signed in  persona's details
+
+**Throws**
+
+- `400` - If handle is not of the correct format or is missing
+- `403` - If user is not logged in
+- `404` - If the user doesn't have the persona associated with `handle` 
+
+#### `GET /api/persona` - Get the personas of the logged in user
+
+**Returns**
+
+- An object with an array of Personas and the logged in user's username
+
+**Throws**
+
+- `404` - If the user is not logged in
+
+#### `GET /api/persona?author=username` - Get the personas of any user (mainly for testing; may remove this in the frontend to keep users' data more secure)
+
+**Returns**
+
+- An object with an array of the user's personas
+
+**Throws**
+
+- `400` - If author is missing
+- `403` - If user is not logged in
+- `404` - If the user is not found
+
 #### `POST /api/persona` - Create a new persona
 
 **Body**  
@@ -356,7 +395,7 @@ This renders the `index.html` file that will be used to interact with the backen
 - `400` - If handle or name are not of the correct format
 - `409` - If handle already taken
 
-#### `DELETE /api/persona/:id` - Delete a persona
+#### `DELETE /api/persona?personaId=id` - Delete a persona
 
 **Returns**
 
@@ -366,9 +405,79 @@ This renders the `index.html` file that will be used to interact with the backen
 
 - `403` if user is not logged in
 - `404` if the persona is not found
+- `401` id the persona to delete is the currently active one
 
+#### `GET /api/follows` - Get all Follows of and by the logged in persona
 
-## Routes I Will Add
+**Returns**
+
+- An object with the session personaId, the Follows where the logged in persona is listed as a follower, and those where it is listed as following.
+
+**Throws**
+
+- `403` - If user is not logged in or if a persona is not signed in
+
+#### `GET /api/follows?personaId=id` - Get all Follows of and by a persona
+
+**Returns**
+
+- An object with the personaId, the Follows where the given persona is listed as a follower, and those where it is listed as following.
+
+**Throws**
+
+- `400` - If a personaId is not supplied
+- `403` - If user is not logged in or if a persona is not signed in
+- `404` - If the persona doesn't exist/can't be found
+
+#### `GET /api/follows/following` - Get all the Follows that the logged in persona initiated (Following List)
+
+**Returns**
+
+- An object of Follows where the logged in persona is listed as a follower (following other personas)
+
+**Throws**
+
+- `403` - If user is not logged in or if a persona is not signed in
+
+#### `GET /api/follows/followers` - Get all the Follows that the logged in persona received (Followers List)
+
+**Returns**
+
+- An object of Follows where the logged in persona is listed under "following" (other personas are following this persona aka they are followers)
+
+**Throws**
+
+- `403` - If user is not logged in or if a persona is not signed in
+
+#### `POST /api/follows` - Create a new follow
+
+**Body**  
+
+- `personaId` _{string}_ - id of the persona to be followed
+
+**Returns**
+
+- An object with the created Follow (where the logged in persona is the follower, and the passed in personaId is being followed)
+
+**Throws**
+
+- `403` - If user is not logged in or if a persona is not currently signed in
+- `404` - If the persona to be followed does not exist
+- `409` - If the signed in persona is already following the personaId
+
+#### `DELETE /api/follows?personaId=id` - Delete a follow (aka unfollow). . Can only be done by the person who iniated the follow (and who is signed in)
+
+**Returns**
+
+- A success message
+
+**Throws**
+
+- `403` - If user is not logged in or if a persona is not currently signed in
+- `404` - If the signed in persona is not following the persona requested (no Follow exists); or if the persona with personaId cannot be found/DNE
+- `400` - If the personaId field is empty
+
+## Routes To Add
 
 #### `GET /api/reactions?author=USERNAME` - Get reactions by author
 
@@ -405,7 +514,7 @@ This renders the `index.html` file that will be used to interact with the backen
 **Body**
 
 - `emoji` _{string}_ - The reaction, unicode string
-- `author` _{string}_ - The Fritter persona handle who authored the reaction
+- `author` _{string}_ - The persona handle who authored the reaction
 - `freetId` _{string}_ - The id of the freet the reaction is tied to
 
 **Returns**
@@ -417,49 +526,3 @@ This renders the `index.html` file that will be used to interact with the backen
 - `403` if the user is not logged in
 - `403` if the user is not the author of the reaction
 - `404` if the freet is invalid or the reaction doesn't exist on the freet
-
-#### `GET /api/followers/persona=HANDLE` - Get all the followers of a persona
-
-**Returns**
-
-- An array of all personas who follow this user/persona, sorted  order by date followed from newest to oldest
-
-#### `GET /api/followers/handle/following` - Get followers of a persona
-
-**Returns**
-
-- An array of persona that this persona follows
-
-**Throws**
-
-- `400` if `persona` is not given
-- `404` if `persona` is not an existing persona
-
-#### `POST /api/followers` - Add the signed in user/persona as a follower to the persona represented by personaId
-
-**Body**
-
-- `follower` _{Persona}_ - The persona requesting to follow
-- `following` _{string}_ - The personaId of the persona to be followed
-- `date` _{Date}_ - The date of following
-
-**Returns**
-
-- A success message
-- A object with the created freet
-
-**Throws**
-
-- `403` if the user is not logged in
-- `404` if the personaId is not valid
-
-#### `DELETE /api/followers/following/personaId?` - Remove the logged in persona as a follower from the persona matched by personaId
-
-**Returns**
-
-- A success message
-
-**Throws**
-
-- `403` if the user is not logged in
-- `404` if the personaId is invalid
