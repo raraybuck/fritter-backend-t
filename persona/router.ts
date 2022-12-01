@@ -128,7 +128,7 @@ router.post(
 /**
  * Update a user's persona's details.
  *
- * @name PUT /api/persona/:id
+ * @name PUT /api/persona/:personaId
  *
  * @param {string} username - username of the persona's user
  * @param {string} handle - The persona's (new) handle
@@ -160,20 +160,27 @@ router.put(
 /**
  * Delete a persona.
  *
- * @name DELETE /api/persona/:personaId
+ * @name DELETE /api/persona?personaId=id
  *
  * @return {string} - A success message
  * @throws {403} - If the user is not logged in
  * @throws {404} - If the persona with personaId is not found
+ * @throws {401} - If the persona to delete is the currently active one
  */
 router.delete(
-  '/:personaId?',
+  '/',
   [
     userValidator.isUserLoggedIn,
-    personaValidator.isPersonaExists
+    personaValidator.isPersonaQueryExists
   ],
   async (req: Request, res: Response) => {
-    await PersonaCollection.deleteOne(req.params.personaId);
+    if (req.query.personaId.toString() === req.session.personaId) {
+      res.status(401).json({
+        error: 'Cannot delete the currently signed in persona. Please switch to a different persona or sign out of the currently active one before deleting it.'
+      });
+      return;
+    }
+    await PersonaCollection.deleteOne(req.query.personaId as string);
     res.status(200).json({
       message: 'Your persona has been deleted successfully.'
     });

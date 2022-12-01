@@ -22,3 +22,15 @@ function viewAllFollowers(fields) {
       .then(showResponse)
       .catch(showResponse);
 }
+
+function createFollow(fields) {
+  fetch('/api/follows', {method: 'POST', body: JSON.stringify(fields), headers: {'Content-Type': 'application/json'}})
+    .then(showResponse)
+    .catch(showResponse);
+}
+
+function deleteFollow(fields) {
+  fetch(`/api/follows?personaId=${fields.personaId}`, {method: 'DELETE', body: JSON.stringify(fields), headers: {'Content-Type': 'application/json'}})
+    .then(showResponse)
+    .catch(showResponse);
+}

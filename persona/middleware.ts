@@ -116,16 +116,16 @@ const isPersonaExistWithUser = async (req: Request, res: Response, next: NextFun
 };
 
 /**
- * Checks if a persona with personaId in params exists.
+ * Checks if a persona with personaId in req.body exists.
  */
 const isPersonaExists = async (req: Request, res: Response, next: NextFunction) => {
-    const persona = await PersonaCollection.findOneByPersonaId(req.params.personaId);
-    if (persona) {
-        next();
-    } else {
-        // const p = await PersonaCollection.findOneByPersonaId(req.query.personaId as string);
-        res.status(404).json({error: 'Persona not found.'});
-        return;
+    const validFormat = Types.ObjectId.isValid(req.body.personaId);
+    const persona = validFormat ? await PersonaCollection.findOneByPersonaId(req.body.personaId) : '';
+    if (!persona) {
+      res.status(404).json({
+        error: 'Persona not found.'
+      });
+      return;
     }
     next();
 };

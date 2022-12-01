@@ -89,7 +89,7 @@ router.get(
         userValidator.isUserLoggedIn,
         personaValidator.isPersonaSignedIn
     ],
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response) => {
         const followerId = req.session.personaId;
         const allFollowing = await FollowCollection.findAllInitiatedById(followerId);
         const response = allFollowing.map(util.constructFollowResponse);
@@ -113,7 +113,7 @@ router.get(
         userValidator.isUserLoggedIn,
         personaValidator.isPersonaSignedIn
     ],
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response) => {
         const followingId = req.session.personaId;
         const allFollowers = await FollowCollection.findAllReceivedById(followingId);
         const response = allFollowers.map(util.constructFollowResponse);
@@ -131,22 +131,49 @@ router.get(
  * @throws {403} - If the user is not logged in
  * @throws {403} - If the user is not currently signed in with a persona
  * @throws {404} - If the persona to be followed does not exist
+ * @throws {409} - If the signed in persona is already following the personaId
  */
- router.post(
+router.post(
     '/',
     [
       userValidator.isUserLoggedIn,
       personaValidator.isPersonaSignedIn,
-      personaValidator.isPersonaExists
+      personaValidator.isPersonaExists,
+      followValidator.isFollowNotExistUnderSignedInPersona
     ],
     async (req: Request, res: Response) => {
       const followerId = (req.session.personaId as string) ?? ''; // Will not be an empty string since its validated in isPersonaSignedIn
-      const follow = await (await FollowCollection.addOne(followerId, req.body.followingId)).populate(["followerId", "followingId"]);
-      res.status(201).json({
-        message: `You have successfully followed the account ${follow.followingId}.`,
-        freet: util.constructFollowResponse(follow)
-      });
+      const follow = await FollowCollection.addOne(followerId, req.body.personaId as string);
+      const response = util.constructFollowResponse(follow);
+      res.status(201).json(response);
     }
+);
+
+/**
+ * Delete a follow (unfollow). Can only be done by the person who iniated the follow (and who is signed in)
+ *
+ * @name DELETE /api/follows?personaId=id
+ *
+ * @return {string} - A success message
+ * @throws {403} - If the user is not logged in
+ * @throws {404} - If the persona with personaId is not found
+ * @throws {401} - If the persona to delete is the currently active one
+ */
+ router.delete(
+    '/',
+    [
+      userValidator.isUserLoggedIn,
+      personaValidator.isPersonaSignedIn,
+      personaValidator.isPersonaQueryExists,
+      followValidator.isFollowExistUnderSignedInPersona
+    ],
+    async (req: Request, res: Response) => {
+        const follow = await FollowCollection.findOneByPartyIds(req.session.personaId, req.query.personaId.toString());
+        await FollowCollection.deleteOne(follow._id);
+        res.status(200).json({
+            message: 'Your persona has been deleted successfully.'
+        });
+        }
   );
 
   export { router as followRouter};

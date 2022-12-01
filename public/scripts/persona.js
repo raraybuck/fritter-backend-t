@@ -15,7 +15,7 @@ function updatePersona(fields) {
 }
 
 function deletePersona(fields) {
-    fetch(`/api/persona/${fields.id}`, {method: 'DELETE'})
+    fetch(`/api/persona?personaId=${fields.id}`, {method: 'DELETE'})
       .then(showResponse)
       .catch(showResponse);
   }

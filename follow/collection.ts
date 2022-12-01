@@ -122,7 +122,7 @@ class FollowCollection {
     /**
      * Delete a follow with given followId.
      *
-     * @param {string} followId - The followId of freet to delete
+     * @param {string} followId - The followId of the Follow to delete
      * @return {Promise<Boolean>} - true if the follow has been deleted, false otherwise
      */
     static async deleteOne(followId: Types.ObjectId | string): Promise<boolean> {

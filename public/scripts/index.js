@@ -50,6 +50,8 @@ const formsAndHandlers = {
   'view-all-follows': viewAllFollows,
   'view-all-followers': viewAllFollowers,
   'view-all-following': viewAllFollowing,
+  'create-follow': createFollow,
+  'delete-follow': deleteFollow
 };
 
 // Attach handlers to forms
